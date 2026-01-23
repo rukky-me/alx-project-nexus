@@ -1,6 +1,25 @@
 #   Post_Feed_API
 
 ##  Project Overview
+This project is a production-grade backend system for a social media feed platform. It supports post creation, user interactions (likes, comments, shares), personalized feed generation, and real-time processing using background tasks.
+
+The system is built with scalability, flexibility, and real-world applicability in mind, following modern backend engineering standards and best practices.
+
+This project is part of Project Nexus, demonstrating mastery of:
+
+Django backend architecture
+
+GraphQL API design
+
+Asynchronous task processing
+
+Database optimization
+
+Containerized deployment
+
+CI/CD workflows
+
+Security and testing
 
 A backend that serves a
 post feed with personalized recommendations. It stores Users, Posts  and keeps records of users. 
@@ -8,12 +27,52 @@ post feed with personalized recommendations. It stores Users, Posts  and keeps r
 It returns a personalized feed for a user.
 
 ##  Technologies Used:
-**Language:** Python 3.12
-**Framework:** Django
-**Docker**
+**Category	            **Tools
+Language	            Python 3.12
+Framework	            Django 5
+Database	            PostgreSQL
+API Layer	            GraphQL (graphene-django), REST (fallback)
+Auth	                djangorestframework-simplejwt
+Background Tasks	    Celery + RabbitMQ
+Containerization	    Docker & Docker Compose
+Documentation	        Swagger/OpenAPI, GraphQL Playground
+CI/CD	                GitHub Actions
+Testing	                Django Test Framework, pytest
 
-**Auth:**
-djangorestframework-simplejwt==5.3.1
+
+##  Key Features
+##  Post & Interaction Management
+
+Create, retrieve, update, and soft-delete posts
+
+Like, comment, and share posts
+
+Track interactions for analytics and personalization
+
+##  GraphQL API
+
+Flexible querying of posts, users, and interactions
+
+Custom resolvers and mutations
+
+Hosted GraphQL Playground for testing
+
+##  Scalable Architecture
+
+PostgreSQL with indexing and optimized queries
+
+Background task processing with Celery + RabbitMQ
+
+Modular Django app structure
+
+##  Security & Reliability
+
+JWT authentication
+
+Rate limiting and input validation
+
+Unit and integration testing
+
 
 ##  Instructions **
 ### Prerequisites
