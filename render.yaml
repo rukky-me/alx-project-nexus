@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: postfeed-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn postfeed.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: postfeed.settings
+      - key: PYTHONUNBUFFERED
+        value: "1"

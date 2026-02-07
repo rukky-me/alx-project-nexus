@@ -15,9 +15,38 @@ class Post(models.Model):
     text = models.TextField()               #stores posts content
     tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    
+    
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["author"]),
+        ]
+        
     def __str__(self):
         return f"Post({self.id}) by {self.author_id}"
+    
+    
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["post"]),
+            models.Index(fields=["author"]),
+        ]
+
+    def __str__(self):
+        return f"Comment({self.id}) on Post({self.post_id})"
+
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
@@ -25,6 +54,28 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("user", "post")      #ensures the user, port is unique
+        unique_together = ("user", "post")
+        indexes = [
+            models.Index(fields=["post"]),
+            models.Index(fields=["user"]),
+        ]
 
+    def __str__(self):
+        return f"Like(user={self.user_id}, post={self.post_id})"
+
+
+class Share(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="shares")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="shares")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")
+        indexes = [
+            models.Index(fields=["post"]),
+            models.Index(fields=["user"]),
+        ]
+
+    def __str__(self):
+        return f"Share(user={self.user_id}, post={self.post_id})"
 

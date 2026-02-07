@@ -2,10 +2,14 @@ import factory
 from django.contrib.auth import get_user_model
 from faker import Faker
 import random
-from posts.models import User, Post, Like, Tag
+
+from posts.models import Post, Like, Tag, Comment, Share
+from analytics.models import PostAnalytics
+from interactions.models import InteractionEvent
 
 fake = Faker()
 User = get_user_model()
+
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -35,14 +39,11 @@ class PostFactory(factory.django.DjangoModelFactory):
         if not create:
             return
         if extracted:
-            # Add specific tags if provided
             for tag in extracted:
                 self.tags.add(tag)
         else:
-            # Add 1–3 random tags
             tag_batch = TagFactory.create_batch(fake.random_int(min=1, max=3))
-            for tag in tag_batch:
-                self.tags.add(tag)
+            self.tags.add(*tag_batch)
 
 
 class LikeFactory(factory.django.DjangoModelFactory):
@@ -51,14 +52,13 @@ class LikeFactory(factory.django.DjangoModelFactory):
 
     user = factory.SubFactory(UserFactory)
     post = factory.SubFactory(PostFactory)
-    
+
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         """Ensure unique (user, post) pair when seeding"""
         user = kwargs.get("user") or UserFactory()
         post = kwargs.get("post") or PostFactory()
 
-        # If like already exists, pick another random combo
         while model_class.objects.filter(user=user, post=post).exists():
             user = random.choice(User.objects.all())
             post = random.choice(Post.objects.all())
@@ -66,3 +66,40 @@ class LikeFactory(factory.django.DjangoModelFactory):
         kwargs["user"] = user
         kwargs["post"] = post
         return super()._create(model_class, *args, **kwargs)
+
+
+class CommentFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Comment
+
+    author = factory.SubFactory(UserFactory)
+    post = factory.SubFactory(PostFactory)
+    text = factory.LazyAttribute(lambda _: fake.sentence())
+
+
+class ShareFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Share
+
+    user = factory.SubFactory(UserFactory)
+    post = factory.SubFactory(PostFactory)
+
+
+class PostAnalyticsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = PostAnalytics
+
+    post = factory.SubFactory(PostFactory)
+    view_count = factory.Faker("random_int", min=0, max=500)
+    like_count = factory.Faker("random_int", min=0, max=100)
+    comment_count = factory.Faker("random_int", min=0, max=100)
+    share_count = factory.Faker("random_int", min=0, max=50)
+
+
+class InteractionEventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = InteractionEvent
+
+    user = factory.SubFactory(UserFactory)
+    post = factory.SubFactory(PostFactory)
+    interaction_type = factory.Iterator(["view", "like", "comment", "share"])

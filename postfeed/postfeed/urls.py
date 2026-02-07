@@ -15,13 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
+from postfeed.schema import schema
+from graphene_django.views import GraphQLView
+from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView, 
     TokenRefreshView,
+
 )
 
 
@@ -32,5 +36,8 @@ urlpatterns = [
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("", lambda request: HttpResponse("PostFeed API is running")),
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]
 

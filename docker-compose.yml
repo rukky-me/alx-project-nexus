@@ -1,13 +1,12 @@
+version: "3.9"
+
 services:
   web:
     build: .
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py seed_users &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python postfeed/manage.py migrate && python postfeed/manage.py runserver 0.0.0.0:8000"
 
     volumes:
-      - ./postfeed:/app
+      - .:/app
     ports:
       - "8000:8000"
     env_file:
@@ -16,7 +15,8 @@ services:
       - db
 
   db:
-    image: postgres:16
+    image: postgres:15
+    restart: always
     environment:
       POSTGRES_DB: postfeed
       POSTGRES_USER: postgres
@@ -24,7 +24,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
