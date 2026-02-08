@@ -15,16 +15,16 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.LazyAttribute(lambda _: fake.unique.user_name())
-    email = factory.LazyAttribute(lambda _: fake.unique.email())
-    is_active = True
-
+    username = factory.Sequence(lambda n: f"user{n}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+    password = factory.PostGenerationMethodCall("set_password", "password123")
 
 class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tag
+        django_get_or_create = ("name",)
 
-    name = factory.LazyAttribute(lambda _: fake.unique.word())
+    name = factory.LazyAttribute(lambda _: fake.word())
 
 
 class PostFactory(factory.django.DjangoModelFactory):
@@ -38,12 +38,14 @@ class PostFactory(factory.django.DjangoModelFactory):
     def tags(self, create, extracted, **kwargs):
         if not create:
             return
+
         if extracted:
             for tag in extracted:
                 self.tags.add(tag)
         else:
-            tag_batch = TagFactory.create_batch(fake.random_int(min=1, max=3))
-            self.tags.add(*tag_batch)
+            for _ in range(fake.random_int(min=1, max=3)):
+                tag = TagFactory()
+                self.tags.add(tag)
 
 
 class LikeFactory(factory.django.DjangoModelFactory):
@@ -55,7 +57,6 @@ class LikeFactory(factory.django.DjangoModelFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        """Ensure unique (user, post) pair when seeding"""
         user = kwargs.get("user") or UserFactory()
         post = kwargs.get("post") or PostFactory()
 

@@ -12,7 +12,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-,   'django.contrib.auth',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -60,14 +60,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'postfeed.wsgi.application'
 
+IS_PRODUCTION = os.getenv("RENDER", "0") == "1"
+
 DATABASES = {
     "default": dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=IS_PRODUCTION,  # Only require SSL in production
     )
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

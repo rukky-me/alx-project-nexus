@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers      #converts complex data types into JSON for APIs
 from .models import Post, Tag, Like
+from .models import Comment
+
 
 User = get_user_model()
 
@@ -44,9 +46,16 @@ class PostCreateSerializer(serializers.ModelSerializer):
         model = Post
         fields = ["content"]
 
-
-
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ["id", "user", "post", "created_at"]
+        
+class CommentSerializer(serializers.ModelSerializer):
+    # Display the username instead of just the user ID
+    user = serializers.StringRelatedField(read_only=True)
+    
+    class Meta:
+        model = Comment
+        fields = ['id', 'post', 'user', 'content', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']

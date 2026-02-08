@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+
 from posts.factories import (
     UserFactory,
     PostFactory,
@@ -24,7 +25,7 @@ class Command(BaseCommand):
         ShareFactory.create_batch(20)
 
         for post in posts:
-            PostAnalyticsFactory(post=post)
+            PostAnalyticsFactory.create(post=post)
 
         InteractionEventFactory.create_batch(50)
 

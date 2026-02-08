@@ -6,7 +6,6 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'posts', PostViewSet, basename='post')
-
 urlpatterns = [
     path("", include(router.urls)),
     path("feed/", FeedView.as_view(), name="feed"),
